@@ -1,0 +1,31 @@
+%jdbc CREATE PARTITION FUNCTION PFG(X BIGINT) AS BLOCK(X) PARTITIONS 16 BLOCKSIZE 1000 USING com.sap.spark.engines
+
+%jdbc CREATE PARTITION SCHEME PSG USING PFG USING com.sap.spark.engines
+
+%jdbc CREATE GRAPH LEARNING_PARTITIONED PARTITION BY PSG(NODEID)
+USING com.sap.spark.engines
+OPTIONS (
+files "/user/vora/learning.jsg",
+storagebackend "hdfs"
+)
+
+%jdbc CREATE GRAPH LEARNING USING com.sap.spark.engines
+OPTIONS (
+files "/user/vora/learning.jsg", storagebackend "hdfs")
+
+%jdbc DROP GRAPH LEARNING_PARTITIONED USING com.sap.spark.engines
+
+%jdbc ``SELECT TITLE FROM TOPIC USING GRAPH LEARNING`` using com.sap.spark.engines
+
+
+%jdbc ``SELECT NAME FROM ANY USING GRAPH LEARNING`` using com.sap.spark.engines
+
+%jdbc ``SELECT TITLE FROM ANY USING GRAPH LEARNING`` using com.sap.spark.engines
+
+%jdbc ``SELECT A.TITLE AS N1, B.TITLE AS N2, DISTANCE(DIRECTED A,B) AS D FROM LEARNING_ITEM A, TOPIC B USING GRAPH LEARNING`` USING com.sap.spark.engines
+
+%jdbc ``SELECT A.TITLE, CONNECTED_COMPONENT(STRONG A) AS SCC, CONNECTED_COMPONENT(WEAK a) AS WCC FROM LEARNING_ITEM A USING GRAPH LEARNING`` USING com.sap.spark.engines
+
+%jdbc ``SELECT L.TITLE FROM TOPIC L USING GRAPH LEARNING WHERE DEGREE(IN L) > 1`` USING com.sap.spark.engines
+
+%jdbc ``SELECT AVG(DEGREE(IN T)) FROM TOPIC T USING GRAPH LEARNING`` USING com.sap.spark.engines
