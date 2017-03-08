@@ -1,0 +1,41 @@
+import org.apache.spark.sql._
+
+import org.apache.spark.sql.types._
+
+val source = "com.sap.spark.vora"
+
+val schema = StructType(StructField("PRODUCT", StringType) :: StructField("SUB_PRODUCT", StringType) 
+:: StructField("ISSUE", StringType):: StructField("SUB_ISSUE", StringType) :: StructField("COMPLAINT_ID",LongType)::Nil )
+
+val options = Map ("tablename" -> "PRODUCTS_P","files" -> "/user/vora/products_s.csv","format" -> "csv", "csvskip"-> "1","storagebackend" ->"hdfs" )
+
+val PRODUCTS_CSV = sqlContext.read.format(source).schema(schema).options(options).load() 
+
+PRODUCTS_CSV.select("PRODUCT","SUB_PRODUCT","ISSUE","SUB_ISSUE","COMPLAINT_ID" ).write.parquet("/user/vora/products_p.parquet")
+
+PRODUCTS_CSV.select("PRODUCT","SUB_PRODUCT","ISSUE","SUB_ISSUE","COMPLAINT_ID").write.orc("/user/vora/products_o.orc")
+
+%jdbc INFER SCHEMA OF "hdfs://localhost:9000/user/vora/products_o.orc"
+
+%jdbc CREATE TABLE PRODUCST_PARQ
+(PRODUCT STRING
+,SUB_PRODUCT STRING
+,ISSUE STRING
+,SUB_ISSUE STRING
+,COMPLAINT_ID INTEGER)
+USING com.sap.spark.vora
+OPTIONS(tablename "PRODUCTS_P", paths "/user/vora/products_p.parquet/*",format "parquet")
+
+%jdbc SELECT * FROM PRODUCST_PARQ
+
+%jdbc CREATE TABLE PRODUCST_ORC
+(PRODUCT STRING
+,SUB_PRODUCT STRING
+,ISSUE STRING
+,SUB_ISSUE STRING
+,COMPLAINT_ID INTEGER)
+USING com.sap.spark.vora
+OPTIONS(tablename "PRODUCTS_ORC", paths "/user/vora/products_o.orc/*",format "orc")
+
+
+%jdbc SELECT * FROM PRODUCST_ORC
