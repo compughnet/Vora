@@ -1,0 +1,30 @@
+%jdbc CREATE TABLE COMPLAINTS
+(DATE_RECEIVED STRING
+,SUBMITTED_VIA STRING
+,DATE_SENT_TO_COMPANY STRING
+,COMPANY_RESPONSE_TO_CONSUMER STRING
+,TIMELY_RESPONSE STRING
+,CONSUMER_DISPUTED STRING
+,COMPLAINT_ID INTEGER )
+USING com.sap.spark.vora
+OPTIONS (storagebackend "hdfs", files "/user/vora/complaints_s.csv", format "csv", csvskip "1")
+
+
+
+%jdbc CREATE TABLE PRODUCTS
+(PRODUCT STRING
+,SUB_PRODUCT STRING
+,ISSUE STRING
+,SUB_ISSUE STRING
+,COMPLAINT_ID INTEGER)
+USING com.sap.spark.vora
+OPTIONS (storagebackend "hdfs",files "/user/vora/products_s.csv", format "csv", csvskip "1")
+
+
+%jdbc CREATE TABLE FINANCIAL_INS
+(COMPANY STRING
+,STATE STRING
+,ZIPCODE INTEGER
+,COMPLAINT_ID INTEGER)
+USING com.sap.spark.vora
+OPTIONS (storagebackend "hdfs",files "/user/vora/financialIns_s.csv", format "csv", csvskip "1")
