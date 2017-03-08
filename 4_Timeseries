@@ -1,0 +1,29 @@
+Data provider: The Time Series Data Library (TSDL) was created by Rob Hyndman, Professor of Statistics at Monash University, Australia.
+
+%jdbc CREATE PARTITION SCHEME PS_TS2 USING PF_TS2 USING com.sap.spark.engines
+
+%jdbc CREATE TABLE ADV_SALE ( TS TIMESTAMP, ADV double, SALE double )
+SERIES ( PERIOD FOR SERIES TS 
+START TIMESTAMP '2014-01-01 00:00:00' 
+END TIMESTAMP '2016-12-01 00:00:00')
+PARTITION BY PS_TS2( TS )
+USING com.sap.spark.engines
+OPTIONS (
+files "/user/vora/advertising-and-sales.csv"
+,csvskip "1"
+,storagebackend "hdfs")
+
+%jdbc ``SELECT * FROM ADV_SALE`` USING com.sap.spark.engines
+
+%jdbc ``SELECT TS, ADV FROM ADV_SALE WHERE PERIOD AS OF TIMESTAMP '2015-09-01 00:00:00'`` USING com.sap.spark.engines
+
+%jdbc ``SELECT TREND(SALE) FROM ADV_SALE WHERE PERIOD AS OF TIMESTAMP '2016-08-01 00:00:00'`` USING com.sap.spark.engines
+
+%jdbc ``SELECT median(SALE), median(ADV) FROM ADV_SALE WHERE PERIOD BETWEEN TIMESTAMP '2015-08-01 00:00:00' AND TIMESTAMP '2016-08-01 00:00:00'`` USING com.sap.spark.engines
+
+%jdbc ``SELECT TREND(SALE), TREND(ADV) FROM ADV_SALE WHERE PERIOD BETWEEN TIMESTAMP '2015-01-01 00:00:00' AND TIMESTAMP '2016-01-01 00:00:00'`` USING com.sap.spark.engines
+ 
+ 
+ %jdbc ``select max(SALE) from ADV_SALE`` USING com.sap.spark.engines
+ 
+ %jdbc ``select mode(SALE), mode(ADV) from ADV_SALE`` USING com.sap.spark.engines
