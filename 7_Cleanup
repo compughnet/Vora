@@ -1,0 +1,44 @@
+--Cleanup of Disk Engine Scenario
+%spark
+// if the notebook of the disk engine does not run through, execute this paragraph, which 
+// deletes the disk tables, partitioning scheme and partitioning function
+
+import org.apache.spark.sql.SapSQLContext
+import scala.util.{Failure, Success, Try}
+val sqlContext = new SapSQLContext(sc)
+
+Try(sqlContext.sql(""" drop table COMPLAINTS_DISK """))
+Try(sqlContext.sql(""" drop table FINANCIAL_INS_DISK """))
+
+Try(sqlContext.sql(""" drop partition scheme PS_DISK using com.sap.spark.engines """))
+Try(sqlContext.sql(""" drop partition function PF_DISK using com.sap.spark.engines """))
+sqlContext.sql(""" show tables using com.sap.spark.engines.disk """).show
+  
+--Cleanup of Time Series Scenario
+  %spark
+// if the notebook for time series does not run through, execute this paragraph, which 
+// deletes the time series table, partitioning scheme and partitioning function
+
+import org.apache.spark.sql.SapSQLContext
+import scala.util.{Failure, Success, Try}
+val sqlContext = new SapSQLContext(sc)
+
+Try(sqlContext.sql(""" drop series table ADV_SALE using com.sap.spark.engines """))
+Try(sqlContext.sql(""" drop partition scheme PS_TS2 using com.sap.spark.engines """))
+Try(sqlContext.sql(""" drop partition function PF_TS2 using com.sap.spark.engines """))
+
+--Cleanup of Graph Scenario
+%spark
+// if the notebook for graph engine does not run through, execute this paragraph, which 
+// deletes the time series table, partitioning scheme and partitioning function
+
+import org.apache.spark.sql.SapSQLContext
+import scala.util.{Failure, Success, Try}
+val sqlContext = new SapSQLContext(sc)
+
+Try(sqlContext.sql(""" drop graph LEARNING_PARTITIONED using com.sap.spark.engines """))
+Try(sqlContext.sql(""" drop graph LEARNING using com.sap.spark.engines """))
+
+Try(sqlContext.sql(""" drop partition scheme PSG using com.sap.spark.engines """))
+Try(sqlContext.sql(""" drop partition function PFG using com.sap.spark.engines """))
+sqlContext.sql(""" show tables using com.sap.spark.engines """).show
