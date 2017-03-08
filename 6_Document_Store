@@ -1,0 +1,17 @@
+%jdbc CREATE PARTITION FUNCTION PF(X) AS HASH(X) MIN PARTITIONS 3 MAX PARTITIONS 3 USING com.sap.spark.engines
+
+%jdbc CREATE PARTITION SCHEME PS USING PF USING com.sap.spark.engines
+
+%jdbc CREATE COLLECTION EMPLOYEES_DOCSTORE
+PARTITION BY PS("name")
+USING com.sap.spark.engines
+OPTIONS (files "/user/vora/employees.json", storagebackend "hdfs")
+
+%jdbc ``select *  from EMPLOYEES_DOCSTORE `` USING com.sap.spark.engines
+
+%jdbc ``select {"ct": "name"} from EMPLOYEES_DOCSTORE order by "_id" asc limit 5`` USING com.sap.spark.engines
+
+%jdbc ``select count(*)  from EMPLOYEES_DOCSTORE `` USING com.sap.spark.engines
+
+%jdbc ``select count(*),{"st":"state"} from EMPLOYEES_DOCSTORE group by "state" order by "state"``
+  USING com.sap.spark.engines
